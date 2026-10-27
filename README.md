@@ -49,35 +49,57 @@
 | 41 | [phishing](./41-phishing/README.md) | 钓鱼与社工攻击（含 AiTM / BEC） | 高 | MITRE T1566 |
 | 42 | [account-takeover](./42-account-takeover/README.md) | 账号接管 ATO | 严重 | CWE-287 / 522 / 640 |
 | 43 | [clickfix](./43-clickfix/README.md) | 假验证码剪贴板攻击 ClickFix | 高 | MITRE T1204.004 |
+| 44 | [watering-hole](./44-watering-hole/README.md) | 水坑攻击 | 高 | MITRE T1189 |
+| 45 | [ddos](./45-ddos/README.md) | 分布式拒绝服务 DDoS | 高 | MITRE T1498 / T1499 |
+| 46 | [mitm](./46-mitm/README.md) | 中间人攻击 MITM | 高 | MITRE T1557 |
+| 47 | [dns-attacks](./47-dns-attacks/README.md) | DNS 攻击（投毒/隧道/接管） | 高 | MITRE T1071.004 |
+| 48 | [malware](./48-malware/README.md) | 恶意软件（勒索/窃密/无文件） | 严重 | MITRE TA0002 / TA0040 |
+| 49 | [credential-theft](./49-credential-theft/README.md) | 凭据窃取与横向移动 | 严重 | MITRE TA0006 / TA0008 |
+| 50 | [cloud-container](./50-cloud-container/README.md) | 云与容器攻击 | 严重 | MITRE T1078.004 / T1611 |
+| 51 | [insider-threat](./51-insider-threat/README.md) | 内部威胁 | 高 | MITRE T1078 / T1567 |
+| 52 | [physical-usb](./52-physical-usb/README.md) | 物理与近场攻击（BadUSB 等） | 高 | MITRE T1200 / T1091 |
+| 53 | [deepfake](./53-deepfake/README.md) | 深度伪造与 AI 社工 | 高 | MITRE T1566 / T1656 |
 
-> 说明：01–40 是「漏洞 / 缺陷」维度；41–43 是「攻击链」维度——它们不依赖目标站漏洞，而是利用人的行为完成投递、执行与接管。
+> 说明：01–40 是「Web 漏洞 / 缺陷」维度；41–53 是「非 Web 攻击链」维度，覆盖**人、网络、终端、身份、云、物理、AI** 七层。它们不依赖目标站代码缺陷，Web 只是其中一个入口。
 
 ## 攻击链视图
 
-真实入侵往往不是单点，而是把多篇内容串成一条链：
+真实入侵往往不是单点，而是把多篇内容串成一条链。
+
+### 时间线：从侦察到影响
 
 ```text
-【社工主线】不依赖站点漏洞，靠人完成
-
-  41-phishing  ──▶  43-clickfix  ──▶  42-account-takeover  ──▶  变现
-  骗密码 / OTP       骗用户执行代码        窃会话 / 持久化         转账 / 盗数据
-        │                  │                                       横向 / 勒索
-        └──────────────────┴──▶ 借道 25-open-redirect、03-xss
-                                让恶意链接寄生在可信域名下
-
-【漏洞主线】直接打系统，跳过「骗人」环节
-
-  01-sql-injection / 02-command-injection
-  12-insecure-deserialization / 31-ssrf
-        └──▶ RCE 或全量数据泄露
+侦察/准备 ──▶ 投递/初始访问 ──▶ 执行/植入 ──▶ 横向/提权 ──▶ 外带/影响
+              41 钓鱼              43 ClickFix      49 凭据窃取      48 勒索/窃密
+              44 水坑              48 恶意软件      50 云与容器      51 内部威胁
+              53 深度伪造          52 物理/USB      42 账号接管      45 DDoS
+              46 中间人 / 47 DNS
 ```
 
-两条主线的防御重点不同：
+### 社工主线：靠人完成，不碰代码
+
+```text
+41-phishing ──▶ 43-clickfix ──▶ 42-account-takeover ──▶ 变现
+骗密码 / OTP     骗用户执行代码      窃会话 / 持久化        转账 / 盗数据
+     └──────────────┴──▶ 借道 25-open-redirect、03-xss
+                          让恶意链接寄生在可信域名下
+```
+
+### 漏洞主线：直接打系统，跳过「骗人」环节
+
+```text
+01-sql-injection / 02-command-injection
+12-insecure-deserialization / 31-ssrf
+      └──▶ RCE 或全量数据泄露
+```
+
+### 三条主线，三种防线
 
 | 主线 | 关键防线 |
 |---|---|
-| 攻击链（人） | 抗钓鱼 MFA、剪贴板策略、演练、流程复核、EDR |
-| 漏洞链（系统） | 参数化、输出编码、鉴权、SSRF 白名单、最小权限 |
+| 社工（人） | 抗钓鱼 MFA、剪贴板策略、演练、流程复核、回拨验证 |
+| 网络/终端（系统） | 分段、出网白名单、EDR、补丁、最小权限、备份 |
+| Web 漏洞（代码） | 参数化、输出编码、鉴权、SSRF 白名单、安全配置 |
 
 ## 风险分级说明
 
@@ -107,6 +129,9 @@
 - 全站 HTTPS + 安全响应头
 - SSRF 出网白名单、上传白名单 + 不可执行目录
 - 抗钓鱼 MFA（Passkey/WebAuthn）+ 会话可即时吊销
+- 全盘加密 + 3-2-1 离线/不可变备份 + 恢复演练
+- 终端 EDR + 出网白名单 + 网络分段（默认拒绝）
+- 大额转账/改账户：回拨已知号码 + 双人复核
 
 ## 推荐标准
 
