@@ -46,6 +46,10 @@
 | 38 | [graphql-api](./38-graphql-api/README.md) | GraphQL / API 安全 | 高 | CWE-863 |
 | 39 | [prompt-injection](./39-prompt-injection/README.md) | 提示词注入（LLM） | 高 | CWE-1427 |
 | 40 | [logging-monitoring](./40-logging-monitoring/README.md) | 日志与监控失效 | 中 | CWE-778 |
+| 41 | [phishing](./41-phishing/README.md) | 钓鱼与社工攻击（含 AiTM / BEC） | 高 | MITRE T1566 |
+| 42 | [account-takeover](./42-account-takeover/README.md) | 账号接管 ATO | 严重 | CWE-287 / 522 / 640 |
+
+> 说明：04–40 是「漏洞 / 缺陷」维度；41–42 是「攻击链」维度——钓鱼是常见的**初始访问**入口，账号接管是多种上游手段汇聚后的**结果**。二者常同时出现在一次真实入侵中。
 
 ## 风险分级说明
 
@@ -74,6 +78,7 @@
 - Argon2id/bcrypt 存密码 + 登录限流与 MFA
 - 全站 HTTPS + 安全响应头
 - SSRF 出网白名单、上传白名单 + 不可执行目录
+- 抗钓鱼 MFA（Passkey/WebAuthn）+ 会话可即时吊销
 
 ## 推荐标准
 
