@@ -48,8 +48,36 @@
 | 40 | [logging-monitoring](./40-logging-monitoring/README.md) | 日志与监控失效 | 中 | CWE-778 |
 | 41 | [phishing](./41-phishing/README.md) | 钓鱼与社工攻击（含 AiTM / BEC） | 高 | MITRE T1566 |
 | 42 | [account-takeover](./42-account-takeover/README.md) | 账号接管 ATO | 严重 | CWE-287 / 522 / 640 |
+| 43 | [clickfix](./43-clickfix/README.md) | 假验证码剪贴板攻击 ClickFix | 高 | MITRE T1204.004 |
 
-> 说明：04–40 是「漏洞 / 缺陷」维度；41–42 是「攻击链」维度——钓鱼是常见的**初始访问**入口，账号接管是多种上游手段汇聚后的**结果**。二者常同时出现在一次真实入侵中。
+> 说明：01–40 是「漏洞 / 缺陷」维度；41–43 是「攻击链」维度——它们不依赖目标站漏洞，而是利用人的行为完成投递、执行与接管。
+
+## 攻击链视图
+
+真实入侵往往不是单点，而是把多篇内容串成一条链：
+
+```text
+【社工主线】不依赖站点漏洞，靠人完成
+
+  41-phishing  ──▶  43-clickfix  ──▶  42-account-takeover  ──▶  变现
+  骗密码 / OTP       骗用户执行代码        窃会话 / 持久化         转账 / 盗数据
+        │                  │                                       横向 / 勒索
+        └──────────────────┴──▶ 借道 25-open-redirect、03-xss
+                                让恶意链接寄生在可信域名下
+
+【漏洞主线】直接打系统，跳过「骗人」环节
+
+  01-sql-injection / 02-command-injection
+  12-insecure-deserialization / 31-ssrf
+        └──▶ RCE 或全量数据泄露
+```
+
+两条主线的防御重点不同：
+
+| 主线 | 关键防线 |
+|---|---|
+| 攻击链（人） | 抗钓鱼 MFA、剪贴板策略、演练、流程复核、EDR |
+| 漏洞链（系统） | 参数化、输出编码、鉴权、SSRF 白名单、最小权限 |
 
 ## 风险分级说明
 
