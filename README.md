@@ -101,6 +101,24 @@
 | 网络/终端（系统） | 分段、出网白名单、EDR、补丁、最小权限、备份 |
 | Web 漏洞（代码） | 参数化、输出编码、鉴权、SSRF 白名单、安全配置 |
 
+## 应急处置（Runbooks）
+
+前面的目录回答「怎么防」，[`runbooks/`](./runbooks/README.md) 回答「已经出事怎么办」：把角色、命令、验证、升级路径写死，值班时照着执行。
+
+| ID | 场景 | 默认级别 |
+|---|---|---|
+| [RB-001](./runbooks/ransomware.md) | 勒索软件 / 批量加密 | P1 |
+| [RB-002](./runbooks/account-takeover.md) | 账号接管 ATO | P2（管理员 P1） |
+| [RB-003](./runbooks/data-breach.md) | 数据泄露 / 外泄 | P1 |
+| [RB-004](./runbooks/ddos.md) | DDoS / 流量攻击 | P2 |
+| [RB-005](./runbooks/phishing-report.md) | 钓鱼邮件上报与处置 | P3 |
+| [RB-006](./runbooks/malware-isolation.md) | 恶意软件隔离与取证 | P2 |
+| [RB-007](./runbooks/credential-leak.md) | 密钥 / 凭据泄露 | P1 |
+| [RB-008](./runbooks/cloud-compromise.md) | 云账号失陷 | P1 |
+| [RB-009](./runbooks/cert-expiry.md) | 证书过期 / 即将过期 | P3（已过期 P1） |
+
+> 通用原则：先止血、再取证，不要关机；破坏性操作双人确认；对外沟通统一出口。详见 [`runbooks/README.md`](./runbooks/README.md)。
+
 ## 风险分级说明
 
 | 等级 | 含义 |
